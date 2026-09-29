@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "nama": "Diagram Data Pelanggan",
+        "keterangan": "Menampilkan data pelanggan yang tersimpan."
+    },
+    {
+        "id": 2,
+        "nama": "Diagram Penjualan",
+        "keterangan": "Menampilkan informasi penjualan."
+    }
+]
