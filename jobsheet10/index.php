@@ -66,10 +66,10 @@ $jumlah_pelanggan = (int)$pdo->query('SELECT count(*) FROM pelanggan')->fetchCol
             <h3>Informasi Login</h3>
 
             <ul>
-                <li>📝 Buat akun melalui menu Register</li>
-                <li>🔐 Login untuk mengelola data</li>
-                <li>📷 Kelola katalog digicam</li>
-                <li>👥 Kelola data pelanggan</li>
+                <li>📌 Buat akun melalui menu Register</li>
+                <li>📌 Login untuk mengelola data</li>
+                <li>📌 Kelola katalog digicam</li>
+                <li>📌 Kelola data pelanggan</li>
             </ul>
 
         </div>
