@@ -5,15 +5,15 @@ require_once '../includes/koneksi.php';
 // Ambil keyword pencarian jika ada
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Query data pelanggan menggunakan fungsi db_query
+// Query data pelanggan menggunakan PostgreSQL native function
 if (!empty($search)) {
     $query = "SELECT * FROM pelanggan 
               WHERE nama ILIKE $1 OR email ILIKE $1 OR no_hp ILIKE $1 OR alamat ILIKE $1 
               ORDER BY id ASC";
-    $result = db_query($query, ['%' . $search . '%']);
+    $result = pg_query_params($conn, $query, ['%' . $search . '%']);
 } else {
     $query = "SELECT * FROM pelanggan ORDER BY id ASC";
-    $result = db_query($query);
+    $result = pg_query($conn, $query);
 }
 
 include '../includes/header.php';
@@ -58,8 +58,8 @@ include '../includes/header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (!empty($result)): ?>
-                        <?php $no = 1; foreach ($result as $row): ?>
+                    <?php if ($result && pg_num_rows($result) > 0): ?>
+                        <?php $no = 1; while ($row = pg_fetch_assoc($result)): ?>
                             <tr>
                                 <th><?= $no++ ?></th>
                                 <td class="fw-medium"><?= htmlspecialchars($row['nama']) ?></td>
@@ -78,7 +78,7 @@ include '../includes/header.php';
                                     </a>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="6" class="text-center py-4 text-muted">

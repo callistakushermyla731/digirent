@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/auth.php';
-require_once '../includes/koneksi.php'; 
+require_once '../includes/koneksi.php';
 
 include '../includes/header.php';
 ?>
@@ -47,6 +47,6 @@ include '../includes/header.php';
             </div>
         </form>
     </div>
-</div> 
+</div>
 
 <?php include '../includes/footer.php'; ?>
