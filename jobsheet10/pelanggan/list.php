@@ -5,16 +5,19 @@ require_once '../includes/koneksi.php';
 // Ambil keyword pencarian jika ada
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Query data pelanggan dengan pencarian server-side
+// Query data pelanggan menggunakan PDO melalui $pdo dari koneksi.php
 if (!empty($search)) {
     $query = "SELECT * FROM pelanggan 
-              WHERE nama ILIKE $1 OR email ILIKE $1 OR no_hp ILIKE $1 OR alamat ILIKE $1 
+              WHERE nama ILIKE :search OR email ILIKE :search OR no_hp ILIKE :search OR alamat ILIKE :search 
               ORDER BY id ASC";
-    $result = pg_query_params($conn, $query, ['%' . $search . '%']);
+    $stmt = $pdo->prepare($query);
+    $stmt->execute(['search' => '%' . $search . '%']);
 } else {
     $query = "SELECT * FROM pelanggan ORDER BY id ASC";
-    $result = pg_query($conn, $query);
+    $stmt = $pdo->query($query);
 }
+
+$pelanggan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 include '../includes/header.php';
 ?>
@@ -58,21 +61,19 @@ include '../includes/header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (pg_num_rows($result) > 0): ?>
-                        <?php $no = 1; while ($row = pg_fetch_assoc($result)): ?>
+                    <?php if (!empty($pelanggan)): ?>
+                        <?php $no = 1; foreach ($pelanggan as $row): ?>
                             <tr>
                                 <th><?= $no++ ?></th>
                                 <td class="fw-medium"><?= htmlspecialchars($row['nama']) ?></td>
                                 <td><?= htmlspecialchars($row['email']) ?></td>
                                 <td><?= htmlspecialchars($row['no_hp']) ?></td>
                                 <td><?= htmlspecialchars($row['alamat']) ?></td>
-                                <td class="text-center">
-                                    <!-- Tombol Edit -->
+                                <td class="text-center"> 
                                     <a href="edit.php?id=<?= $row['id'] ?>" 
                                        class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1">
                                        Edit
-                                    </a>
-                                    <!-- Tombol Hapus -->
+                                    </a> 
                                     <a href="hapus.php?id=<?= $row['id'] ?>" 
                                        class="btn btn-sm btn-pink-light text-pink rounded-pill px-3" 
                                        onclick="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')">
@@ -80,7 +81,7 @@ include '../includes/header.php';
                                     </a>
                                 </td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="6" class="text-center py-4 text-muted">
