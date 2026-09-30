@@ -1,16 +1,97 @@
 <?php
 require_once '../includes/auth.php';
 require_once '../includes/koneksi.php';
-$page=max(1,(int)($_GET['page']??1)); $per_page=10; $offset=($page-1)*$per_page;
-$total=(int)$pdo->query('select count(*) from pelanggan')->fetchColumn();
-$stmt=$pdo->prepare('select id,nama,email,no_hp,alamat from pelanggan order by id desc limit :limit offset :offset');
-$stmt->bindValue(':limit',$per_page,PDO::PARAM_INT); $stmt->bindValue(':offset',$offset,PDO::PARAM_INT); $stmt->execute(); $data=$stmt->fetchAll(); $total_pages=max(1,(int)ceil($total/$per_page));
+
+// Ambil keyword pencarian jika ada
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Query data pelanggan dengan pencarian server-side
+if (!empty($search)) {
+    $query = "SELECT * FROM pelanggan 
+              WHERE nama ILIKE $1 OR email ILIKE $1 OR no_hp ILIKE $1 OR alamat ILIKE $1 
+              ORDER BY id ASC";
+    $result = pg_query_params($conn, $query, ['%' . $search . '%']);
+} else {
+    $query = "SELECT * FROM pelanggan ORDER BY id ASC";
+    $result = pg_query($conn, $query);
+}
+
+include '../includes/header.php';
 ?>
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Daftar Pelanggan - DIGIRENT</title><link rel="stylesheet" href="../assets/css/style.css"></head><body>
-<?php include '../includes/header.php'; ?><main class="container">
-<?php if(isset($_SESSION['pesan'])):?><div class="alert alert-success"><?=htmlspecialchars($_SESSION['pesan'])?></div><?php unset($_SESSION['pesan']);endif;?>
-<?php if(isset($_SESSION['error'])):?><div class="alert alert-danger"><?=htmlspecialchars($_SESSION['error'])?></div><?php unset($_SESSION['error']);endif;?>
-<div class="table-card"><div class="table-header"><div><h2>Daftar Pelanggan</h2><p>CRUD lengkap dengan PostgreSQL.</p></div><?php if(isset($_SESSION['login'])&&$_SESSION['login']===true):?><a href="tambah.php" class="btn-pink">+ Tambah Pelanggan</a><?php endif;?></div>
-<div class="table-responsive"><table><thead><tr><th>No</th><th>Nama</th><th>Email</th><th>No. HP</th><th>Alamat</th><th>Aksi</th></tr></thead><tbody>
-<?php if($data):$no=$offset+1;foreach($data as $row):?><tr><td><?=$no++?></td><td><?=htmlspecialchars($row['nama'])?></td><td><?=htmlspecialchars($row['email'])?></td><td><?=htmlspecialchars($row['no_hp'])?></td><td><?=htmlspecialchars($row['alamat'])?></td><td class="actions"><?php if(isset($_SESSION['login'])&&$_SESSION['login']===true):?><a href="edit.php?id=<?=(int)$row['id']?>" class="btn-action btn-edit">Edit</a><form action="hapus.php" method="post" class="inline-form" onsubmit="return confirm('Yakin ingin menghapus data pelanggan ini?');"><input type="hidden" name="id" value="<?=(int)$row['id']?>"><button type="submit" class="btn-action btn-delete">Hapus</button></form><?php else:?>-<?php endif;?></td></tr><?php endforeach;else:?><tr><td colspan="6" class="empty-state">Belum ada pelanggan.</td></tr><?php endif;?></tbody></table></div>
-<?php if($total_pages>1):?><div class="pagination"><?php for($i=1;$i<=$total_pages;$i++):?><a class="<?=$i===$page?'active':''?>" href="?page=<?=$i?>"><?=$i?></a><?php endfor;?></div><?php endif;?></div></main><?php include '../includes/footer.php';?></body></html>
+
+<div class="card card-custom">
+    <div class="card-body">
+        <!-- Header & Tombol Tambah Pelanggan -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold text-pink mb-1">Daftar Pelanggan</h3>
+                <p class="text-muted mb-0">CRUD lengkap dengan PostgreSQL, pencarian server-side, dan pagination.</p>
+            </div>
+            <a href="tambah.php" class="btn btn-pink text-white rounded-pill px-4 fw-semibold">
+                + Tambah Pelanggan
+            </a>
+        </div>
+
+        <!-- Form Pencarian (Search Bar) -->
+        <form method="GET" action="list.php" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control rounded-start-pill border-end-0 ps-3" 
+                       placeholder="Cari nama, email, no hp, atau alamat..." 
+                       value="<?= htmlspecialchars($search) ?>">
+                <button type="submit" class="btn btn-pink text-white rounded-end-pill px-4 fw-semibold">
+                    Cari
+                </button>
+            </div>
+        </form>
+
+        <!-- Tabel Daftar Pelanggan -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light text-uppercase small text-muted">
+                    <tr>
+                        <th scope="col" width="5%">NO</th>
+                        <th scope="col">NAMA</th>
+                        <th scope="col">EMAIL</th>
+                        <th scope="col">NO. HP</th>
+                        <th scope="col">ALAMAT</th>
+                        <th scope="col" class="text-center" width="15%">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (pg_num_rows($result) > 0): ?>
+                        <?php $no = 1; while ($row = pg_fetch_assoc($result)): ?>
+                            <tr>
+                                <th><?= $no++ ?></th>
+                                <td class="fw-medium"><?= htmlspecialchars($row['nama']) ?></td>
+                                <td><?= htmlspecialchars($row['email']) ?></td>
+                                <td><?= htmlspecialchars($row['no_hp']) ?></td>
+                                <td><?= htmlspecialchars($row['alamat']) ?></td>
+                                <td class="text-center">
+                                    <!-- Tombol Edit -->
+                                    <a href="edit.php?id=<?= $row['id'] ?>" 
+                                       class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1">
+                                       Edit
+                                    </a>
+                                    <!-- Tombol Hapus -->
+                                    <a href="hapus.php?id=<?= $row['id'] ?>" 
+                                       class="btn btn-sm btn-pink-light text-pink rounded-pill px-3" 
+                                       onclick="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')">
+                                       Hapus
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Data pelanggan tidak ditemukan.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<?php include '../includes/footer.php'; ?>

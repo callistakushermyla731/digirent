@@ -1,17 +1,75 @@
 <?php
 require_once '../includes/auth.php';
 require_once '../includes/koneksi.php';
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if (!$id) { $_SESSION['error'] = 'ID digicam tidak valid.'; header('Location: list.php'); exit; }
-$stmt = $pdo->prepare('select id, nama, merek, tipe, harga_sewa, stok from digicam where id = :id');
-$stmt->execute(['id' => $id]);
-$edit = $stmt->fetch();
-if (!$edit) { $_SESSION['error'] = 'Data digicam tidak ditemukan.'; header('Location: list.php'); exit; }
+
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    header("Location: list.php");
+    exit;
+}
+
+$query = "SELECT * FROM digicam WHERE id = $1";
+$result = pg_query_params($conn, $query, [$id]);
+$data = pg_fetch_assoc($result);
+
+if (!$data) {
+    header("Location: list.php");
+    exit;
+}
+
+include '../includes/header.php';
 ?>
-<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Edit Digicam - DIGIRENT</title><link rel="stylesheet" href="../assets/css/style.css"></head><body>
-<?php include '../includes/header.php'; ?><main class="container"><div class="form-card"><h2 style="color:#d63384;margin-bottom:1.5rem">Edit Data Digicam</h2>
-<form action="proses_edit.php" method="post"><input type="hidden" name="id" value="<?= (int)$edit['id'] ?>">
-<div class="form-row"><div class="form-group"><label for="nama">Nama Digicam</label><input id="nama" name="nama" value="<?= htmlspecialchars($edit['nama']) ?>" required></div><div class="form-group"><label for="merek">Merek</label><input id="merek" name="merek" value="<?= htmlspecialchars($edit['merek']) ?>" required></div></div>
-<div class="form-row"><div class="form-group"><label for="tipe">Tipe</label><input id="tipe" name="tipe" value="<?= htmlspecialchars($edit['tipe']) ?>" required></div><div class="form-group"><label for="harga_sewa">Harga Sewa per Hari</label><input id="harga_sewa" type="number" name="harga_sewa" value="<?= (int)$edit['harga_sewa'] ?>" min="0" required></div></div>
-<div class="form-group"><label for="stok">Stok</label><input id="stok" type="number" name="stok" value="<?= (int)$edit['stok'] ?>" min="0" required></div>
-<div class="btn-group"><button class="btn-pink" type="submit">Update</button><a href="list.php" class="btn-outline">Kembali</a></div></form></div></main><?php include '../includes/footer.php'; ?></body></html>
+
+<div class="card card-custom">
+    <div class="card-body p-4">
+        <h3 class="fw-bold text-pink mb-4">Edit Data Digicam</h3>
+
+        <form action="proses_edit.php" method="POST">
+            <input type="hidden" name="id" value="<?= htmlspecialchars($data['id']) ?>">
+
+            <div class="row g-3">
+                <!-- Nama Digicam -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Nama Digicam</label>
+                    <input type="text" name="nama" class="form-control" value="<?= htmlspecialchars($data['nama']) ?>" required>
+                </div>
+
+                <!-- Merek -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Merek</label>
+                    <input type="text" name="merek" class="form-control" value="<?= htmlspecialchars($data['merek']) ?>" required>
+                </div>
+
+                <!-- Tipe -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Tipe</label>
+                    <input type="text" name="tipe" class="form-control" value="<?= htmlspecialchars($data['tipe']) ?>" required>
+                </div>
+
+                <!-- Harga Sewa per Hari -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Harga Sewa per Hari</label>
+                    <input type="number" name="harga_sewa" class="form-control" value="<?= htmlspecialchars($data['harga_sewa']) ?>" required>
+                </div>
+
+                <!-- Stok -->
+                <div class="col-12 mb-4">
+                    <label class="form-label fw-semibold">Stok</label>
+                    <input type="number" name="stok" class="form-control" value="<?= htmlspecialchars($data['stok']) ?>" required>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-pink text-white rounded-pill px-4 fw-semibold">
+                    Update
+                </button>
+                <a href="list.php" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+                    Kembali
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php include '../includes/footer.php'; ?>
