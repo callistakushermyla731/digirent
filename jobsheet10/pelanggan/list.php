@@ -66,11 +66,11 @@ include '../includes/header.php';
                                 <td><?= htmlspecialchars($row['email']) ?></td>
                                 <td><?= htmlspecialchars($row['no_hp']) ?></td>
                                 <td><?= htmlspecialchars($row['alamat']) ?></td>
-                                <td class="text-center"> 
+                                <td class="text-center">
                                     <a href="edit.php?id=<?= $row['id'] ?>" 
                                        class="btn btn-sm btn-outline-primary rounded-pill px-3 me-1">
                                        Edit
-                                    </a> 
+                                    </a>
                                     <a href="hapus.php?id=<?= $row['id'] ?>" 
                                        class="btn btn-sm btn-pink-light text-pink rounded-pill px-3" 
                                        onclick="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')">
