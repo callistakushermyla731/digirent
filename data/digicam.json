@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "nama": "Canon IXUS 185",
+        "merek": "Canon",
+        "tipe": "Compact Camera",
+        "harga_sewa": 75000,
+        "stok": 3
+    },
+    {
+        "id": 2,
+        "nama": "Sony Cyber-shot DSC-W830",
+        "merek": "Sony",
+        "tipe": "Compact Camera",
+        "harga_sewa": 80000,
+        "stok": 2
+    },
+    {
+        "id": 3,
+        "nama": "Fujifilm FinePix JX500",
+        "merek": "Fujifilm",
+        "tipe": "Compact Camera",
+        "harga_sewa": 70000,
+        "stok": 4
+    }
+]
