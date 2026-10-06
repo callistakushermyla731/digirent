@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "nama": "Callista",
+        "email": "callista@gmail.com",
+        "no_hp": "081234567890",
+        "alamat": "Malang"
+    },
+    {
+        "id": 2,
+        "nama": "Dimas",
+        "email": "dimas@gmail.com",
+        "no_hp": "082345678901",
+        "alamat": "Blitar"
+    }
+]
