@@ -1,52 +1,93 @@
 <?php
 require_once '../includes/auth.php';
 require_once '../includes/koneksi.php';
-
-include '../includes/header.php';
 ?>
 
-<div class="card card-custom">
-    <div class="card-body p-4">
-        <h3 class="fw-bold text-pink mb-4">Tambah Pelanggan</h3>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Pelanggan - DIGIRENT</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
 
-        <form action="proses_tambah.php" method="POST">
-            <div class="row g-3">
-                <!-- Nama -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-semibold">Nama</label>
-                    <input type="text" name="nama" class="form-control" placeholder="Masukkan nama pelanggan" required>
+<?php include '../includes/header.php'; ?>
+
+<main class="container">
+
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($_SESSION['error']) ?>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
+    <div class="form-card">
+        <h2 style="color:#d63384; margin-bottom:1.5rem;">Tambah Pelanggan</h2>
+
+        <form action="proses_tambah.php" method="post">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nama">Nama</label>
+                    <input
+                        type="text"
+                        id="nama"
+                        name="nama"
+                        placeholder="Masukkan nama pelanggan"
+                        required
+                    >
                 </div>
 
-                <!-- Email -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-semibold">Email</label>
-                    <input type="email" name="email" class="form-control" placeholder="Masukkan email" required>
-                </div>
-
-                <!-- No. HP -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-semibold">No. HP</label>
-                    <input type="text" name="no_hp" class="form-control" placeholder="Masukkan nomor HP" required>
-                </div>
-
-                <!-- Alamat -->
-                <div class="col-md-6 mb-4">
-                    <label class="form-label fw-semibold">Alamat</label>
-                    <input type="text" name="alamat" class="form-control" placeholder="Masukkan alamat" required>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Masukkan email"
+                        required
+                    >
                 </div>
             </div>
 
-            <!-- Tombol Aksi -->
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-pink text-white rounded-pill px-4 fw-semibold">
-                    Simpan
-                </button>
-                <a href="list.php" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
-                    Kembali
-                </a>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="no_hp">No. HP</label>
+                    <input
+                        type="tel"
+                        id="no_hp"
+                        name="no_hp"
+                        placeholder="Masukkan nomor HP"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="alamat">Alamat</label>
+                    <input
+                        type="text"
+                        id="alamat"
+                        name="alamat"
+                        placeholder="Masukkan alamat"
+                        required
+                    >
+                </div>
             </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-pink">Simpan</button>
+                <a href="list.php" class="btn-outline">Kembali</a>
+            </div>
+
         </form>
     </div>
-</div>
+
+</main>
 
 <?php include '../includes/footer.php'; ?>
+
+</body>
+</html>

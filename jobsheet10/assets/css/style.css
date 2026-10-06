@@ -975,3 +975,34 @@ footer {
 .pagination{display:flex;gap:7px;justify-content:center;margin-top:20px;flex-wrap:wrap}
 .pagination a{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 10px;border:1px solid #ddd;border-radius:9px;text-decoration:none;color:#555;background:#fff}
 .pagination a.active{background:#d63384;color:#fff;border-color:#d63384}
+
+
+/* Perbaikan Jobsheet 10: header, navigation, dan halaman pelanggan */
+.navbar-link-group { margin: 0; padding: 0; }
+.navbar-link-group li { list-style: none; }
+
+.table-header > div:first-child { flex: 1; }
+.table-header .btn-pink { flex-shrink: 0; }
+
+.search-form {
+    padding: 1.25rem 1.5rem 0;
+}
+
+.search-form input:focus {
+    border-color: #d63384;
+    box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.10);
+}
+
+.form-card h2 { color: #d63384; }
+
+@media (max-width: 768px) {
+    header { padding: 1rem; }
+    .header-container { align-items: flex-start; }
+    .brand-title { margin-bottom: 0; font-size: 1.7rem; }
+    .hamburger-btn { display: block; right: 0; top: -2px; }
+    nav { width: 100%; display: none; margin-top: 1rem; }
+    .menu-toggle:checked ~ nav { display: block; }
+    nav ul { flex-direction: column; align-items: stretch; width: 100%; }
+    nav ul li { width: 100%; text-align: center; }
+    nav a { display: block; width: 100%; }
+}
